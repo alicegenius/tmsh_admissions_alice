@@ -1,215 +1,219 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>拜訪回報系統</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; display: flex; min-height: 100vh; background: #f5f6fa; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>拜訪回報系統</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Microsoft JhengHei", "PingFang TC", sans-serif; display: flex; min-height: 100vh; background: #f5f6fa; }
 
-    /* ── 側邊選單 ── */
-    .sidebar {
-      width: 220px; background: #2c3e50; color: #fff; padding: 20px 0;
-      display: flex; flex-direction: column; flex-shrink: 0;
-    }
-    .sidebar h2 { font-size: 18px; padding: 0 20px 20px; border-bottom: 1px solid #3d566e; }
-    .sidebar ul { list-style: none; padding: 10px 0; flex: 1; }
-    .sidebar li { padding: 12px 20px; cursor: pointer; transition: background 0.2s; }
-    .sidebar li:hover { background: #3d566e; }
-    .sidebar li.active { background: #1abc9c; font-weight: bold; }
+    /* ── 側邊選單 ── */
+    .sidebar {
+      width: 220px; background: #2c3e50; color: #fff; padding: 20px 0;
+      display: flex; flex-direction: column; flex-shrink: 0;
+    }
+    .sidebar h2 { font-size: 18px; padding: 0 20px 20px; border-bottom: 1px solid #3d566e; }
+    .sidebar ul { list-style: none; padding: 10px 0; flex: 1; }
+    .sidebar li { padding: 12px 20px; cursor: pointer; transition: background 0.2s; }
+    .sidebar li:hover { background: #3d566e; }
+    .sidebar li.active { background: #1abc9c; font-weight: bold; }
 
-    /* ── 主內容區 ── */
-    .main { flex: 1; padding: 30px 40px; overflow-y: auto; }
-    .main h1 { font-size: 24px; color: #2c3e50; margin-bottom: 8px; }
-    .reporter-line { font-size: 15px; color: #555; margin-bottom: 24px; }
+    /* ── 主內容區 ── */
+    .main { flex: 1; padding: 30px 40px; overflow-y: auto; }
+    .main h1 { font-size: 24px; color: #2c3e50; margin-bottom: 8px; }
+    .reporter-line { font-size: 15px; color: #555; margin-bottom: 24px; }
 
-    /* ── 表單 ── */
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
-    .form-group input[type="text"],
-    .form-group input[type="date"],
-    .form-group select,
-    .form-group textarea {
-      width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px;
-      font-size: 14px; background: #fff;
-    }
-    .form-group textarea { resize: vertical; min-height: 80px; }
+    /* ── 表單 ── */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 6px; color: #333; }
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px;
+      font-size: 14px; background: #fff;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
 
-    /* ── 多選 checkbox ── */
-    .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; }
-    .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+    /* ── 多選 checkbox ── */
+    .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; }
+    .checkbox-group label { font-weight: normal; display: flex; align-items: center; gap: 4px; cursor: pointer; }
 
-    /* ── 條件區塊 ── */
-    .conditional { display: none; }
-    .conditional.show { display: block; }
+    /* ── 條件區塊 ── */
+    .conditional { display: none; }
+    .conditional.show { display: block; }
 
-    /* ── 按鈕 ── */
-    .btn-submit {
-      background: #1abc9c; color: #fff; border: none; padding: 12px 36px;
-      font-size: 16px; border-radius: 6px; cursor: pointer; transition: background 0.2s;
-    }
-    .btn-submit:hover { background: #16a085; }
-    .btn-submit:disabled { background: #95a5a6; cursor: not-allowed; }
-  </style>
+    /* ── 按鈕 ── */
+    .btn-submit {
+      background: #1abc9c; color: #fff; border: none; padding: 12px 36px;
+      font-size: 16px; border-radius: 6px; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-submit:hover { background: #16a085; }
+    .btn-submit:disabled { background: #95a5a6; cursor: not-allowed; }
+  </style>
 </head>
 <body>
 
 <!-- ════ 側邊選單 ════ -->
 <nav class="sidebar">
-  <h2>功能選單</h2>
-  <ul>
-    <li class="active">拜訪回報專區</li>
-  </ul>
+  <h2>功能選單</h2>
+  <ul>
+    <li class="active">拜訪回報專區</li>
+  </ul>
 </nav>
 
 <!-- ════ 主表單區 ════ -->
 <div class="main">
-  <h1>拜訪回報表單</h1>
-  <p class="reporter-line">填報人：<strong id="displayReporter">--</strong>（系統自動帶入）</p>
+  <h1>拜訪回報表單</h1>
+  <p class="reporter-line">填報人：<strong id="displayReporter">--</strong>（系統自動帶入）</p>
 
-  <form id="visitForm">
+  <form id="visitForm">
 
-    <!-- 1. 拜訪單位 -->
-    <div class="form-group">
-      <label>1. 拜訪單位</label>
-      <input type="text" id="visitUnit" required>
-    </div>
+    <!-- 1. 拜訪單位 -->
+    <div class="form-group">
+      <label>1. 拜訪單位</label>
+      <input type="text" id="visitUnit" required>
+    </div>
 
-    <!-- 2. 拜訪日期 -->
-    <div class="form-group">
-      <label>2. 拜訪日期</label>
-      <input type="date" id="visitDate" required>
-    </div>
+    <!-- 2. 拜訪日期 -->
+    <div class="form-group">
+      <label>2. 拜訪日期</label>
+      <input type="date" id="visitDate" required>
+    </div>
 
-    <!-- 3. 拜訪機構 -->
-    <div class="form-group">
-      <label>3. 拜訪機構</label>
-      <select id="visitOrg" required>
-        <option value="">-- 請選擇 --</option>
-        <option value="國中">國中</option>
-        <option value="高中">高中</option>
-        <option value="高職">高職</option>
-        <option value="大專院校">大專院校</option>
-        <option value="其他">其他</option>
-      </select>
-    </div>
+    <!-- 3. 拜訪機構 -->
+    <div class="form-group">
+      <label>3. 拜訪機構</label>
+      <select id="visitOrg" required>
+        <option value="">-- 請選擇 --</option>
+        <option value="國中">國中</option>
+        <option value="高中">高中</option>
+        <option value="高職">高職</option>
+        <option value="大專院校">大專院校</option>
+        <option value="其他">其他</option>
+      </select>
+    </div>
 
-    <!-- 4. 拜訪事由 (Multi-select) -->
-    <div class="form-group">
-      <label>4. 拜訪事由（可複選）</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" name="visitReasons" value="招生宣導"> 招生宣導</label>
-        <label><input type="checkbox" name="visitReasons" value="建教合作"> 建教合作</label>
-        <label><input type="checkbox" name="visitReasons" value="產學合作"> 產學合作</label>
-        <label><input type="checkbox" name="visitReasons" value="實習媒合"> 實習媒合</label>
-        <label><input type="checkbox" name="visitReasons" value="其他"> 其他</label>
-      </div>
-    </div>
+    <!-- 4. 拜訪事由 (Multi-select) -->
+    <div class="form-group">
+      <label>4. 拜訪事由（可複選）</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="visitReasons" value="招生宣導"> 招生宣導</label>
+        <label><input type="checkbox" name="visitReasons" value="建教合作"> 建教合作</label>
+        <label><input type="checkbox" name="visitReasons" value="產學合作"> 產學合作</label>
+        <label><input type="checkbox" name="visitReasons" value="實習媒合"> 實習媒合</label>
+        <label><input type="checkbox" name="visitReasons" value="其他"> 其他</label>
+      </div>
+    </div>
 
-    <!-- 5. 是否有招生機會 -->
-    <div class="form-group">
-      <label>5. 是否有招生機會？</label>
-      <select id="hasOpportunity" required>
-        <option value="">-- 請選擇 --</option>
-        <option value="有">有</option>
-        <option value="目前沒有">目前沒有</option>
-      </select>
-    </div>
+    <!-- 5. 是否有招生機會 -->
+    <div class="form-group">
+      <label>5. 是否有招生機會？</label>
+      <select id="hasOpportunity" required>
+        <option value="">-- 請選擇 --</option>
+        <option value="有">有</option>
+        <option value="目前沒有">目前沒有</option>
+      </select>
+    </div>
 
-    <!-- 6. 招生機會簡述 (條件：選「有」才顯示) -->
-    <div class="form-group conditional" id="groupOppDesc">
-      <label>6. 招生機會簡述</label>
-      <textarea id="opportunityDesc" placeholder="請簡述招生機會內容..."></textarea>
-    </div>
+    <!-- 6. 招生機會簡述 (條件：選「有」才顯示) -->
+    <div class="form-group conditional" id="groupOppDesc">
+      <label>6. 招生機會簡述</label>
+      <textarea id="opportunityDesc" placeholder="請簡述招生機會內容..."></textarea>
+    </div>
 
-    <!-- 7. 希望招生端協助 (條件：選「有」才顯示) -->
-    <div class="form-group conditional" id="groupAssist">
-      <label>7. 希望招生端協助（可複選）</label>
-      <div class="checkbox-group">
-        <label><input type="checkbox" name="assistanceNeeded" value="提供招生簡章"> 提供招生簡章</label>
-        <label><input type="checkbox" name="assistanceNeeded" value="安排說明會"> 安排說明會</label>
-        <label><input type="checkbox" name="assistanceNeeded" value="提供獎助學金資訊"> 提供獎助學金資訊</label>
-        <label><input type="checkbox" name="assistanceNeeded" value="招生專員到校"> 招生專員到校</label>
-        <label><input type="checkbox" name="assistanceNeeded" value="其他"> 其他</label>
-      </div>
-    </div>
+    <!-- 7. 希望招生端協助 (條件：選「有」才顯示) -->
+    <div class="form-group conditional" id="groupAssist">
+      <label>7. 希望招生端協助（可複選）</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" name="assistanceNeeded" value="提供招生簡章"> 提供招生簡章</label>
+        <label><input type="checkbox" name="assistanceNeeded" value="安排說明會"> 安排說明會</label>
+        <label><input type="checkbox" name="assistanceNeeded" value="提供獎助学金資訊"> 提供獎助學金資訊</label>
+        <label><input type="checkbox" name="assistanceNeeded" value="招生專員到校"> 招生專員到校</label>
+        <label><input type="checkbox" name="assistanceNeeded" value="其他"> 其他</label>
+      </div>
+    </div>
 
-    <button type="submit" class="btn-submit" id="btnSubmit">送出表單</button>
-  </form>
+    <button type="submit" class="btn-submit" id="btnSubmit">送出表單</button>
+  </form>
 </div>
 
 <script>
-  // 直連 Google 表單 Response 端點
-  const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScl3ZW50ca9vJ2vFLEa5yogjQzxgHvtvoCA0IrR7bHn1QXbrA/formResponse";
+  // ── 請將此 URL 替換為你的 GAS 部署網址 ──
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxo_fTl5D-aUUUiiYwftQsINx8yEMia4XhbOQS-O4d8Jv3oP7ofN2OnWIe7YGMlWWua/exec";
 
-  // 取得填報人資訊
-  const currentUser = "E12345 思婷"; 
-  const reporter = sessionStorage.getItem("reporter") || currentUser;
-  document.getElementById("displayReporter").textContent = reporter;
+  // 取得填報人（優先 sessionStorage，其次 currentUser 變數）
+  const currentUser = "E12345 思婷";  // ← 可從登入系統動態帶入
+  const reporter = sessionStorage.getItem("reporter") || currentUser;
+  document.getElementById("displayReporter").textContent = reporter;
 
-  // 自動設定預設日期為今日
-  function setToday() {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, "0");
-    const dd = String(today.getDate()).padStart(2, "0");
-    document.getElementById("visitDate").value = `${yyyy}-${mm}-${dd}`;
-  }
-  setToday();
+  // 自動帶入今日日期
+  (function setToday() {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    document.getElementById("visitDate").value = `${yyyy}-${mm}-${dd}`;
+  })();
 
-  // 監聽問題5選項控制6、7區塊動態顯示
-  document.getElementById("hasOpportunity").addEventListener("change", function () {
-    const show = this.value === "有";
-    document.getElementById("groupOppDesc").classList.toggle("show", show);
-    document.getElementById("groupAssist").classList.toggle("show", show);
-    if (!show) {
-      document.getElementById("opportunityDesc").value = "";
-      document.querySelectorAll('input[name="assistanceNeeded"]').forEach(cb => cb.checked = false);
-    }
-  });
+  // ── 問題5 監聽：展開/收合 問題6、7 ──
+  document.getElementById("hasOpportunity").addEventListener("change", function () {
+    const show = this.value === "有";
+    document.getElementById("groupOppDesc").classList.toggle("show", show);
+    document.getElementById("groupAssist").classList.toggle("show", show);
+    if (!show) {
+      document.getElementById("opportunityDesc").value = "";
+      document.querySelectorAll('input[name="assistanceNeeded"]').forEach(cb => cb.checked = false);
+    }
+  });
 
-  // 表單非同步提交邏輯
-  document.getElementById("visitForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
-    const btn = document.getElementById("btnSubmit");
-    btn.disabled = true;
-    btn.textContent = "傳送中...";
+  // ── 表單送出 ──
+  document.getElementById("visitForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const btn = document.getElementById("btnSubmit");
+    btn.disabled = true;
+    btn.textContent = "傳送中...";
 
-    // 處理多選陣列
-    const visitReasons = Array.from(document.querySelectorAll('input[name="visitReasons"]:checked')).map(cb => cb.value).join("、");
-    const assistanceNeeded = Array.from(document.querySelectorAll('input[name="assistanceNeeded"]:checked')).map(cb => cb.value).join("、");
+    // 收集多選資料
+    const visitReasons = Array.from(document.querySelectorAll('input[name="visitReasons"]:checked')).map(cb => cb.value);
+    const assistanceNeeded = Array.from(document.querySelectorAll('input[name="assistanceNeeded"]:checked')).map(cb => cb.value);
 
-    // 映射表單內容至 Google Form Entry ID
-    const formData = new URLSearchParams();
-    formData.append("entry.1974550924", document.getElementById("visitDate").value);
-    formData.append("entry.1102836436", document.getElementById("visitOrg").value);
-    formData.append("entry.1643756031", document.getElementById("visitUnit").value.trim());
-    formData.append("entry.1830555680", visitReasons);
-    formData.append("entry.1699662080", document.getElementById("hasOpportunity").value);
-    formData.append("entry.1790835536", document.getElementById("opportunityDesc").value.trim());
-    formData.append("entry.1756549296", assistanceNeeded);
-    formData.append("entry.1343827545", reporter);
+    const payload = {
+      visitUnit:       document.getElementById("visitUnit").value.trim(),
+      visitDate:       document.getElementById("visitDate").value,
+      visitOrg:        document.getElementById("visitOrg").value,
+      visitReasons:    visitReasons,
+      hasOpportunity:  document.getElementById("hasOpportunity").value,
+      opportunityDesc: document.getElementById("opportunityDesc").value.trim(),
+      assistanceNeeded: assistanceNeeded,
+      reporter:        reporter
+    };
 
-    try {
-      await fetch(FORM_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: formData
-      });
-
-      alert("表單已成功送出！");
-      document.getElementById("visitForm").reset();
-      setToday();
-      document.getElementById("groupOppDesc").classList.remove("show");
-      document.getElementById("groupAssist").classList.remove("show");
-    } catch (err) {
-      alert("送出失敗：" + err.message);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = "送出表單";
-    }
-  });
+    fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "text/plain;charset=utf-8" }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert("表單已成功送出！");
+          document.getElementById("visitForm").reset();
+          // 重新帶入今日日期與隱藏條件欄位
+          setToday();
+          document.getElementById("groupOppDesc").classList.remove("show");
+          document.getElementById("groupAssist").classList.remove("show");
+        } else {
+          alert("送出失敗：" + data.error);
+        }
+      })
+      .catch(err => alert("發生錯誤：" + err.message))
+      .finally(() => {
+        btn.disabled = false;
+        btn.textContent = "送出表單";
+      });
+  });
 </script>
 
 </body>
