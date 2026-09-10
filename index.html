@@ -99,40 +99,6 @@
 
 <body class="bg-ivory font-sans text-charcoal antialiased">
 
-<!-- ============ 登入畫面：需輸入員工編號驗證通過後才能看到網站內容 ============ -->
-<div id="loginGate" class="fixed inset-0 z-50 flex items-center justify-center bg-navy px-4">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-8">
-    <div class="flex items-center gap-3 mb-6">
-      <img src="logo.png" alt="大明高級中學校徽" class="w-10 h-10 object-contain shrink-0" />
-      <div>
-        <p class="font-serif text-base text-navy leading-snug">大明高級中學</p>
-        <p class="text-[10px] tracking-widest text-gold">TA-MING HIGH SCHOOL</p>
-      </div>
-    </div>
-    <h2 class="font-serif text-lg mb-1">招生工作手冊</h2>
-    <p class="text-xs text-warmgray mb-5">內部使用，請輸入您的員工編號以繼續</p>
-
-    <form id="loginForm">
-      <label for="staffId" class="sr-only">員工編號</label>
-      <input
-        id="staffId"
-        type="text"
-        autocomplete="off"
-        placeholder="請輸入員工編號"
-        class="w-full rounded border border-paperline px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold"
-      />
-      <button type="submit" id="loginBtn" class="w-full bg-navy text-white text-sm font-medium rounded py-2.5 hover:bg-navylight transition-colors disabled:opacity-60">
-        登入
-      </button>
-    </form>
-
-    <p id="loginError" class="hidden mt-3 text-xs text-burgundy leading-relaxed"></p>
-    <p id="loginLoading" class="hidden mt-3 text-xs text-warmgray">驗證中，請稍候…</p>
-  </div>
-</div>
-
-<div id="appRoot" class="hidden">
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <div class="flex flex-col md:flex-row min-h-screen">
 
   <!-- ============ 側邊選單 Sidebar ============ -->
@@ -2171,87 +2137,8 @@
     </main>
   </div>
 </div>
-</div><!-- /#appRoot -->
 
 <script>
-  // ---- 登入驗證（員工編號） ----
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxo_fTl5D-aUUUiiYwftQsINx8yEMia4XhbOQS-O4d8Jv3oP7ofN2OnWIe7YGMlWWua/exec';
-
-  const loginGate    = document.getElementById('loginGate');
-  const appRoot      = document.getElementById('appRoot');
-  const loginForm    = document.getElementById('loginForm');
-  const staffIdInput = document.getElementById('staffId');
-  const loginError   = document.getElementById('loginError');
-  const loginLoading = document.getElementById('loginLoading');
-  const loginBtn     = document.getElementById('loginBtn');
-
-  if (sessionStorage.getItem('staffLoggedIn') === 'yes') {
-    loginGate.classList.add('hidden');
-    appRoot.classList.remove('hidden');
-  }
-
-  function jsonpLogin(id, onResult) {
-    const cbName = 'loginCb_' + Date.now();
-    const script = document.createElement('script');
-    let finished = false;
-
-    window[cbName] = function (data) {
-      finished = true;
-      onResult(data);
-      delete window[cbName];
-      script.remove();
-    };
-
-    script.src = GAS_URL + '?action=login&id=' + encodeURIComponent(id) + '&callback=' + cbName;
-    script.onerror = function () {
-      if (!finished) {
-        finished = true;
-        onResult({ ok: false, message: '無法連線到驗證系統，請確認網路連線。' });
-        delete window[cbName];
-      }
-    };
-    document.body.appendChild(script);
-
-    setTimeout(function () {
-      if (!finished) {
-        finished = true;
-        onResult({ ok: false, message: '驗證逾時，請重新整理頁面再試一次。' });
-        delete window[cbName];
-      }
-    }, 8000);
-  }
-
-  loginForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    const id = staffIdInput.value.trim();
-    loginError.classList.add('hidden');
-
-    if (!id) {
-      loginError.textContent = '請輸入員工編號';
-      loginError.classList.remove('hidden');
-      return;
-    }
-
-    loginBtn.disabled = true;
-    loginLoading.classList.remove('hidden');
-
-    jsonpLogin(id, function (result) {
-      loginLoading.classList.add('hidden');
-      loginBtn.disabled = false;
-
-      if (result && result.ok) {
-        sessionStorage.setItem('staffLoggedIn', 'yes');
-        sessionStorage.setItem('staffId', result.id);
-        sessionStorage.setItem('staffName', result.name || '');
-        loginGate.classList.add('hidden');
-        appRoot.classList.remove('hidden');
-      } else {
-        loginError.textContent = (result && result.message) || '員工編號驗證失敗，請確認後再試一次。';
-        loginError.classList.remove('hidden');
-      }
-    });
-  });
-
   // ---- 分類母選單：展開／收合（不跳轉頁面，僅切換子項目顯示） ----
   document.querySelectorAll('.nav-toggle').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2356,56 +2243,12 @@
 
   // ---- 拜訪回報表單 ----
   // ---- 拜訪回報表單 ----
-  // ====================================================================
-  // Google 表單設定：請依照「取得 entry ID」的步驟，把下面換成你自己的值
-  // ====================================================================
-  const GOOGLE_FORM_ID = '請貼上你的 Google 表單 ID';
+  const VISIT_GAS_URL = 'https://script.google.com/macros/s/AKfycbxo_fTl5D-aUUUiiYwftQsINx8yEMia4XhbOQS-O4d8Jv3oP7ofN2OnWIe7YGMlWWua/exec';
 
-  const FORM_ENTRIES = {
-    visitDate:        '請貼上「拜訪日期」題目的 entry ID',
-    visitOrg:          '請貼上「拜訪機構」題目的 entry ID',
-    visitUnit:         '請貼上「拜訪單位」題目的 entry ID',
-    visitReasons:      '請貼上「拜訪事由」題目的 entry ID',
-    hasOpportunity:    '請貼上「是否有招生機會」題目的 entry ID',
-    opportunityDesc:   '請貼上「招生機會簡述」題目的 entry ID',
-    assistanceNeeded:  '請貼上「希望招生端協助」題目的 entry ID',
-    reporter:          '請貼上「填報人」題目的 entry ID'
-  };
-
-  function submitToGoogleForm(payload) {
-    const formUrl = 'https://docs.google.com/forms/d/e/' + GOOGLE_FORM_ID + '/formResponse';
-
-    const form = document.createElement('form');
-    form.action = formUrl;
-    form.method = 'POST';
-    form.target = 'hidden_iframe';
-    form.style.display = 'none';
-
-    function addField(entryId, value) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = 'entry.' + entryId;
-      input.value = value;
-      form.appendChild(input);
-    }
-
-    addField(FORM_ENTRIES.visitDate, payload.visitDate);
-    addField(FORM_ENTRIES.visitOrg, payload.visitOrg);
-    addField(FORM_ENTRIES.visitUnit, payload.visitUnit);
-    addField(FORM_ENTRIES.visitReasons, payload.visitReasons.join('、'));
-    addField(FORM_ENTRIES.hasOpportunity, payload.hasOpportunity);
-    addField(FORM_ENTRIES.opportunityDesc, payload.opportunityDesc);
-    addField(FORM_ENTRIES.assistanceNeeded, payload.assistanceNeeded.join('、'));
-    addField(FORM_ENTRIES.reporter, payload.reporter);
-
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  }
-
-  // 填報人直接取自登入時驗證通過的員編與姓名
-  const reporter = (sessionStorage.getItem('staffId') || '') + ' ' + (sessionStorage.getItem('staffName') || '');
-  document.getElementById("displayReporter").textContent = reporter.trim() || '未登入';
+  // 取得填報人（優先 sessionStorage，其次 currentUser 變數）
+  const currentUser = "E12345 思婷";  // ← 可從登入系統動態帶入
+  const reporter = sessionStorage.getItem("reporter") || currentUser;
+  document.getElementById("displayReporter").textContent = reporter;
 
   const visitDate = document.getElementById('visitDate');
   if (visitDate) visitDate.valueAsDate = new Date();
@@ -2433,8 +2276,8 @@
       const status = document.getElementById('visitStatus');
       status.classList.add('hidden');
 
-      if (GOOGLE_FORM_ID.indexOf('請貼上') === 0) {
-        status.textContent = '尚未設定 Google 表單 ID，請聯絡系統管理員完成設定（GOOGLE_FORM_ID）。';
+      if (VISIT_GAS_URL.indexOf('http') !== 0) {
+        status.textContent = '尚未設定後端網址，請聯絡系統管理員完成設定（VISIT_GAS_URL）。';
         status.classList.remove('hidden');
         status.classList.add('text-burgundy');
         return;
@@ -2457,18 +2300,33 @@
       btn.disabled = true;
       btn.textContent = '傳送中...';
 
-      submitToGoogleForm(payload);
-
-      // Google 表單不開放跨網域讀取回應，送出後無法 100% 確認後端是否收到，
-      // 這裡等一小段時間讓 iframe 有機會完成提交，再樂觀顯示成功訊息
-      setTimeout(function () {
-        btn.disabled = false;
-        btn.textContent = '送出回報';
-        alert('回報已送出，謝謝！');
-        visitForm.reset();
-        visitDate.valueAsDate = new Date();
-        oppFields.classList.add('hidden');
-      }, 800);
+      fetch(VISIT_GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          btn.disabled = false;
+          btn.textContent = '送出回報';
+          if (data.success) {
+            alert('回報已送出，謝謝！');
+            visitForm.reset();
+            visitDate.valueAsDate = new Date();
+            oppFields.classList.add('hidden');
+          } else {
+            status.textContent = '送出失敗：' + data.error;
+            status.classList.remove('hidden');
+            status.classList.add('text-burgundy');
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+          btn.textContent = '送出回報';
+          status.textContent = '傳送失敗，請確認網路連線或聯絡系統管理員。';
+          status.classList.remove('hidden');
+          status.classList.add('text-burgundy');
+        });
     });
   }
 </script>
