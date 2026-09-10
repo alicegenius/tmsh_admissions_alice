@@ -98,40 +98,7 @@
 </head>
 
 <body class="bg-ivory font-sans text-charcoal antialiased">
-
-<!-- ============ 登入畫面：需輸入員工編號驗證通過後才能看到網站內容 ============ -->
-<div id="loginGate" class="fixed inset-0 z-50 flex items-center justify-center bg-navy px-4">
-  <div class="bg-white rounded-lg shadow-xl w-full max-w-sm p-8">
-    <div class="flex items-center gap-3 mb-6">
-      <img src="logo.png" alt="大明高級中學校徽" class="w-10 h-10 object-contain shrink-0" />
-      <div>
-        <p class="font-serif text-base text-navy leading-snug">大明高級中學</p>
-        <p class="text-[10px] tracking-widest text-gold">TA-MING HIGH SCHOOL</p>
-      </div>
-    </div>
-    <h2 class="font-serif text-lg mb-1">招生工作手冊</h2>
-    <p class="text-xs text-warmgray mb-5">內部使用，請輸入您的員工編號以繼續</p>
-
-    <form id="loginForm">
-      <label for="staffId" class="sr-only">員工編號</label>
-      <input
-        id="staffId"
-        type="text"
-        autocomplete="off"
-        placeholder="請輸入員工編號"
-        class="w-full rounded border border-paperline px-4 py-2.5 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold"
-      />
-      <button type="submit" id="loginBtn" class="w-full bg-navy text-white text-sm font-medium rounded py-2.5 hover:bg-navylight transition-colors disabled:opacity-60">
-        登入
-      </button>
-    </form>
-
-    <p id="loginError" class="hidden mt-3 text-xs text-burgundy leading-relaxed"></p>
-    <p id="loginLoading" class="hidden mt-3 text-xs text-warmgray">驗證中，請稍候…</p>
-  </div>
-</div>
-
-<div id="appRoot" class="hidden">
+<div id="appRoot">
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 <div class="flex flex-col md:flex-row min-h-screen">
 
