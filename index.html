@@ -2187,7 +2187,7 @@
       }
     }, 8000);
   }
-
+if (loginForm) {
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
     const id = staffIdInput.value.trim();
@@ -2205,6 +2205,10 @@
     jsonpLogin(id, function (result) {
       loginLoading.classList.add('hidden');
       loginBtn.disabled = false;
+      // ...其餘原本的 callback 邏輯...
+    });
+  });
+}
 
       if (result && result.ok) {
         sessionStorage.setItem('staffLoggedIn', 'yes');
